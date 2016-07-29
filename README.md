@@ -36,3 +36,6 @@ preferenceUsed = userPreferences.boolForKey(Global.Preferences.kPreferencesUsedK
 3. Add default values
 
 4. Accomodate in case the string is new and is not present in the Preferences when the key is used for the first time.
+
+NOTE:
+I use #if DEBUG to conditionally print the Log data. Change this in the Build Settings. Add -DDEBUG or -DRELEASE
