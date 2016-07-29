@@ -28,110 +28,56 @@
 //  implementations of the classes below.
 //  In addition, this class makes use of a SINGLE instance of the sharedPreference object
 //  so that it can be used throughout the application.
+//
+//  USAGE: 
+//  The instance of this class will be a shared instance that is persisted throughout the application lifecycle.
+//  Preference *appPrefs = [Preference sharedInstance]; -- INVOKE THE SHARED INSTANCE
+//  appPrefs.lastUpdateDate = [NSDate date]; -- SET VALUES
+//  [appPrefs savePreferences]; -- SAVE THE PREFERENCES
+//
+//  Additional keys to be used to save additional preferences,
+//  you need to define the Constants for the key String and then the corresponding public field.
+//
+//  Version History
+//  Version     Date        Modified By         Modification Details
+//  0.11        2013/09/18  MacNeil Fernandes   Removed Night Mode
+//  0.12        2013/09/20  MacNeil Fernandes   Added the Current Version of the App
+//  1.01        2013/10/07  MacNeil Fernandes   Moved the #defines to externs constant Strings for Performance
 
-#import "Preference.h"
-#import "UtilityConstants.h"
-//#import "Metadata.h"
+#import <Foundation/Foundation.h>
 
-/*
- * This is the static class that is used for the management for the share preferences
- * used throughout the app. The Clas method will take care of instantiatiomn of this shared
- * preference object
- */
-@implementation Preference
+/* Keys for the NSUserDefaults file */
 
-// This is the Static preference variable that will be used throughout the app
-static Preference *sharedInstance = nil;
+// Key for the Last Date and time updated
+//#define KEY_LAST_TIME_UPDATED @"last_time_updated"
+// Key for the App is used more than Once
+//#define KEY_IS_USED_MORE_THAN_ONCE @"is_used_more_than_once"
+// Key for the Night Mode of the App
+//#define KEY_NIGHT_MODE @"night_mode"
+/// Key for the Current Version of App
+//#define KEY_CURRENT_VERION @"current_version"
 
-#pragma mark - INITIALIZATION
--(id)init{
-    if (DEBUG) NSLog(@"Running %@ %@", self.class , NSStringFromSelector(_cmd));
-    if (self = [super init]){
-        [self loadPreferences];
-    }
-    return self;
-}
+@interface Preference : NSObject
 
-
-#pragma mark - PRIVATE FUNCTIONS
+#pragma mark - PUBLIC API
 /*!
- * This is the function that loads the preferences.
- * If the NSUserDefaults is already set load the values from there,
- * Else Set to the default values
+ * Last Time the app was used 
  */
--(void)loadPreferences{
-    if (DEBUG) NSLog(@"Running %@ %@", self.class , NSStringFromSelector(_cmd));
-    
-    // 1. Get the User Default NSuSerDefaults Object
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    
-    // 2. Check for the validity of the user Defaults
-    if (userDefaults){
-        
-        // Check the file to see if there are values present else set default values
-        // 4. Get the Last Updated Date
-        _lastUpdateDate = [userDefaults objectForKey:KEY_LAST_TIME_UPDATED];
-    
-        if (_lastUpdateDate){
-            //NSLog(@"%@", _lastUpdateDate);
-            // 3. Retrieve the values for the various Keys
-            _isUsedMoreThanOnce = [userDefaults boolForKey:KEY_IS_USED_MORE_THAN_ONCE];
-            //_isNightModeOn = [userDefaults boolForKey:KEY_NIGHT_MODE];
-            _currentVersion = [userDefaults objectForKey:KEY_CURRENT_VERSION];
-        } else{
-            // This means that we need to set to the default values
-            [self setDefaultPreferences];
-            
-            // Save the data to the NSUserDefaults file
-            [self savePreferences];
-        }
-    }
-}
-
-#pragma mark - CLASS FUNCTION
+@property (nonatomic) NSDate *lastUpdateDate;
 /*!
- * This is the class method that will return the static instance of the preference class.
- * the classes that wish to leverage the shared preferences need to make a call to this CLASS FUNCTION.
- * \returns Static instance of the Preference class.
+ * Appliation has been used more than once. This is a flag that will have a 
+ * NO value only for the First time the application is run 
  */
-+(Preference *) sharedInstance{
-    if (DEBUG) NSLog(@"Running %@ %@", self.class , NSStringFromSelector(_cmd));
-    
-    if (nil == sharedInstance){
-        // This means that the sharedInstance was never set. Therefore call the init function
-        // which in turn will set the values to the values last used or the values that are Default
-        sharedInstance = [[self alloc]init];
-    }
-    return sharedInstance;
-}
-
-#pragma mark - PUBLIC FUNCTION
+@property (nonatomic) BOOL isUsedMoreThanOnce;
 /*!
- * This is the Function that will save the data in the NSUserDefaults file
+ * The Current Version string for the application
  */
--(void)savePreferences{
-    if (DEBUG) NSLog(@"Running %@ %@", self.class , NSStringFromSelector(_cmd));
-    
-    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    if (DEBUG) NSLog(@"SAVING -- Last Update Date: %@", _lastUpdateDate);
-    [userDefaults setObject:_lastUpdateDate forKey:KEY_LAST_TIME_UPDATED];
-    if (DEBUG) NSLog(@"SAVING -- Used More than Once: %@", _isUsedMoreThanOnce? @"YES":@"NO");
-    [userDefaults setBool:_isUsedMoreThanOnce forKey:KEY_IS_USED_MORE_THAN_ONCE];
-    if (DEBUG) NSLog(@"SAVING -- Current Version: %@", _currentVersion);
-    [userDefaults setObject:_currentVersion forKey:KEY_CURRENT_VERSION];
-    [userDefaults synchronize];
-}
+@property (nonatomic, strong) NSString *currentVersion;
 
-/*!
- * Function that will set the default Preferences
- */
--(void)setDefaultPreferences{
-    if (DEBUG) NSLog(@"Running %@ %@", self.class , NSStringFromSelector(_cmd));
-    
-    _lastUpdateDate = [NSDate date];
-    //_isNightModeOn = NO;
-    _currentVersion = [Metadata version];
-}
+#pragma mark - CLASS METHOD
++(Preference *) sharedInstance;
 
-
+#pragma mark - PUBLIC FUNCTIONS
+-(void) savePreferences;
+-(void) setDefaultPreferences;
 @end
