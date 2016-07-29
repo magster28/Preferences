@@ -9,11 +9,13 @@ USAGE:
 The instance of this class will be a shared instance that is persisted throughout the application lifecycle.
 
 // Objective - C
+
 Preference *appPrefs = [Preference sharedInstance]; -- INVOKE THE SHARED INSTANCE
 appPrefs.lastUpdateDate = [NSDate date]; -- SET VALUES
 [appPrefs savePreferences]; -- SAVE THE PREFERENCES
 
 //  *Updated 2015/02/28 - SWIFT
+
 Invoke the Shared instance (Usually in didFinishLaunchingWithOptions)
 Preference.shared
 
