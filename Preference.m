@@ -1,6 +1,6 @@
 // FOR HISTORICAL PURPOSES ONLY
 //
-//  Preference.h
+//  Preference.m
 //  Photo Math
 //
 //  Created by MacNeil Fernandes on 6/16/13.
